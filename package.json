@@ -1,0 +1,62 @@
+{
+  "name": "model-intellisense",
+  "displayName": "Model IntelliSense for Java Spring Boot Thymeleaf HTML",
+  "description": "Spring Boot model fields IntelliSense suggestions in Thymeleaf HTML pages",
+  "version": "2.12.10",
+  "publisher": "atkivisolutioninstadotnetmodelgenerator",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "icon": "image/logo.png",
+  "activationEvents": [
+    "onLanguage:html",
+    "onLanguage:plaintext",
+    "onCommand:modelIntellisense.rescanModels"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "modelIntellisense.rescanModels",
+        "title": "Model IntelliSense: Rescan Models"
+      }
+    ]
+  },
+  "scripts": {
+    "package": "vsce package"
+  },
+  "keywords": [
+    "thymeleaf",
+    "spring boot",
+    "java",
+    "html",
+    "intellisense",
+    "model",
+    "completion",
+    "template"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/model-intellisense"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/model-intellisense/issues"
+  },
+  "homepage": "https://github.com/yourusername/model-intellisense",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.100.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1"
+  },
+  "dependencies": {
+    "glob": "^7.2.3"
+  }
+}

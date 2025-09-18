@@ -1,4 +1,3 @@
-
 // extension.js
 const vscode = require('vscode');
 const path = require('path');
@@ -91,6 +90,10 @@ class WinFormsDesignerProvider {
                 case 'error':
                     vscode.window.showErrorMessage(message.message);
                     break;
+
+                case 'goToHandler':
+                    await this.goToHandler(document, message.handlerName);
+                    break;
             }
         });
 
@@ -108,6 +111,36 @@ class WinFormsDesignerProvider {
         webviewPanel.onDidDispose(() => {
             changeDocumentSubscription.dispose();
         });
+    }
+
+    async goToHandler(document, handlerName) {
+        const designerFile = document.uri.fsPath;
+        const codeBehindFile = designerFile.replace('.Designer.cs', '.cs');
+
+        if (!fs.existsSync(codeBehindFile)) {
+            vscode.window.showErrorMessage('Code-behind file not found.');
+            return;
+        }
+
+        const codeDoc = await vscode.workspace.openTextDocument(vscode.Uri.file(codeBehindFile));
+        const text = codeDoc.getText();
+        const regex = new RegExp(`private\\s+void\\s+${handlerName}\\s*\\(`);
+        let position = null;
+        const lines = text.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            if (regex.test(lines[i])) {
+                position = new vscode.Position(i, 0);
+                break;
+            }
+        }
+
+        if (position) {
+            const editor = await vscode.window.showTextDocument(codeDoc);
+            editor.selection = new vscode.Selection(position, position);
+            editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+        } else {
+            vscode.window.showInformationMessage(`Handler '${handlerName}' not found in code-behind.`);
+        }
     }
 
     parseCSharpForm(text, fileName) {

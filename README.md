@@ -1,4 +1,7 @@
-Overview (free opensource designer developed purely on javascript html css)
+{{Overview (free opensource designer developed purely on javascript html css)
+kindly note this is hobbistic project:project design created by using this extension may be opened by visual studio but not vice versa it may remove code  so dont open your vs ide projects by using this extension.
+just useful in design place points x,y location not more than it currently. this is just test version currently not working fully.}}
+
 WinForms Designer is a VS Code extension that provides a visual designer for C# Windows Forms applications. It supports two-way editing, meaning changes in the visual designer are reflected in the .Designer.cs code, and vice versa. The designer uses a dark theme by default, with drag-and-drop support for adding controls, property editing, event handler generation, and real-time synchronization with your code.
 This extension is ideal for .NET developers working with WinForms in VS Code, offering a modern alternative to traditional designers like Visual Studio's. It supports .NET 8 and focuses on ease of use with a dark mode interface.
 Key Features:
@@ -23,8 +26,13 @@ Install the extension published by atkivisolutioninstadotnetmodelgenerator.
 Reload VS Code if prompted.
 
 Alternatively, download the .vsix file from the releases page and install it manually via VS Code's "Install from VSIX" command.
+
+
+
 ##Usage
-terminal to create winform project 
+
+
+terminal to create winform project using command line dont net core sdk with path varible neccesory in environment varibles (tested in Windows 11 os).
 
     dotnet new winforms -n MyWinFormsApp 
     cd MyWinFormsApp
@@ -61,7 +69,13 @@ Changes are applied in real-time and synced to code.
 
 
 
-Adding Events
+##Adding Events
+select event go that textbox press ##enter key then next press [go] button 
+
+
+
+
+
 
 In the Properties Panel, under Events, enter a handler name (auto-suggested as <ControlName>_<EventName>).
 Press Enter to generate the handler in the code-behind file (e.g., MyForm.cs).
@@ -189,19 +203,20 @@ Tested on .NET 8; may work with older versions but not guaranteed.
 
 
 
-Repository: https://github.com/yourusername/winforms-designer 
 
 
-blue square to move option
-red square to delete option 
+
+##blue square to move option
+##red square to delete option 
 
 License
 freeware opensource 
 
 Glitch:
+vs ide files not support currently it removes code.
 every time when you move to other tabs you will need to close designer windows close and reopen .
 youcan develop it by using localstorage functionality.
 
-it is useful for beginer leaner who has low end machine so user can learn basic things,for advance he can go for visual studio ide
+it is useful for beginer learner who has low end machine so user can learn basic things,for advance you can go for visual studio ide.
 
-Thanks for supporting my extension have fun!!! sk Miraj Maharashtra 
+Thanks for supporting my extension have fun learning!!! atkiwisolution

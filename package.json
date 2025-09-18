@@ -1,7 +1,6 @@
-
 {
   "name": "winforms-designer",
-  "displayName": "WinForms Designer fun",
+  "displayName": "WinForms Designer Test or Beta Version",
   "description": "Visual designer for Windows Forms with two-way editing",
   "version": "1.12.10",
     "publisher": "atkivisolutioninstadotnetmodelgenerator",
@@ -9,8 +8,8 @@
     "vscode": "^1.60.0"
   },
   "categories": [
-    "Visualization",
-    "Designers"
+    "Visualization"
+    
   ],
    "icon": "image/logo.png",
   "activationEvents": [

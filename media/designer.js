@@ -1,4 +1,3 @@
-
 const vscode = acquireVsCodeApi();
 let currentFormData = null;
 let selectedControl = null;
@@ -347,222 +346,267 @@ function showContextMenu(e, control) {
     contextMenu.appendChild(copyOption);
     contextMenu.appendChild(deleteOption);
     document.body.appendChild(contextMenu);
+    
+    document.addEventListener('click', () => {
+        if (contextMenu) document.body.removeChild(contextMenu);
+    }, { once: true });
+}
 
-    // Remove context menu on click outside
-    const removeContextMenu = () => {
-        if (contextMenu.parentNode) {
-            document.body.removeChild(contextMenu);
-        }
-        document.removeEventListener('click', removeContextMenu);
-    };
-    document.addEventListener('click', removeContextMenu);
+function deleteControl(control) {
+    const index = currentFormData.controls.findIndex(c => c.name === control.name);
+    if (index !== -1) {
+        currentFormData.controls.splice(index, 1);
+    }
+    
+    const element = document.querySelector(`.control[data-name="${control.name}"]`);
+    if (element) element.remove();
+    
+    vscode.postMessage({
+        type: 'deleteControl',
+        controlName: control.name
+    });
+    
+    selectedControl = null;
+    showProperties();
+    updateFormDesign();
 }
 
 function selectControl(element, control) {
     deselectAllControls();
     element.classList.add('selected');
     selectedControl = control;
-    showControlProperties(control, element);
+    showControlProperties();
 }
 
-function showControlProperties(control, element) {
-    const propertiesContent = document.getElementById('propertiesContent');
-    propertiesContent.innerHTML = '';
+function showProperties() {
+    if (selectedForm) {
+        showFormProperties();
+    } else if (selectedControl) {
+        showControlProperties();
+    } else {
+        document.getElementById('propertiesContent').innerHTML = '';
+    }
+}
 
-    // Basic properties
-    const basicGroup = `
+function showControlProperties() {
+    const propertiesContent = document.getElementById('propertiesContent');
+    let html = `
         <div class="property-group">
-            <h4>Basic</h4>
+            <h4>General</h4>
             <div class="property-row">
                 <span class="property-label">Name:</span>
-                <input class="property-input" type="text" value="${control.name}" 
+                <input class="property-input" type="text" value="${selectedControl.name}" 
                        onchange="updateControlProperty('name', this.value)">
             </div>
             <div class="property-row">
                 <span class="property-label">Text:</span>
-                <input class="property-input" type="text" value="${control.text}" 
+                <input class="property-input" type="text" value="${selectedControl.text}" 
                        onchange="updateControlProperty('text', this.value)">
             </div>
             <div class="property-row">
                 <span class="property-label">X:</span>
-                <input class="property-input" type="number" value="${control.location.x}" 
+                <input class="property-input" type="number" value="${selectedControl.location.x}" 
                        onchange="updateControlProperty('x', parseInt(this.value))">
             </div>
             <div class="property-row">
                 <span class="property-label">Y:</span>
-                <input class="property-input" type="number" value="${control.location.y}" 
+                <input class="property-input" type="number" value="${selectedControl.location.y}" 
                        onchange="updateControlProperty('y', parseInt(this.value))">
             </div>
             <div class="property-row">
                 <span class="property-label">Width:</span>
-                <input class="property-input" type="number" value="${control.size.width}" 
+                <input class="property-input" type="number" value="${selectedControl.size.width}" 
                        onchange="updateControlProperty('width', parseInt(this.value))">
             </div>
             <div class="property-row">
                 <span class="property-label">Height:</span>
-                <input class="property-input" type="number" value="${control.size.height}" 
+                <input class="property-input" type="number" value="${selectedControl.size.height}" 
                        onchange="updateControlProperty('height', parseInt(this.value))">
             </div>
             <div class="property-row">
                 <span class="property-label">TabIndex:</span>
-                <input class="property-input" type="number" value="${control.tabIndex || 0}" 
+                <input class="property-input" type="number" value="${selectedControl.tabIndex || 0}" 
                        onchange="updateControlProperty('tabIndex', parseInt(this.value))">
             </div>
         </div>
     `;
-    propertiesContent.innerHTML += basicGroup;
-
-    // Type-specific properties
-    if (control.type === 'CheckBox' || control.type === 'RadioButton') {
-        const checkedGroup = `
+    
+    // Control-specific properties
+    if (selectedControl.type === 'CheckBox' || selectedControl.type === 'RadioButton') {
+        html += `
             <div class="property-group">
                 <h4>State</h4>
                 <div class="property-row">
                     <span class="property-label">Checked:</span>
-                    <input class="property-input" type="checkbox" ${control.checked ? 'checked' : ''} 
+                    <input class="property-input" type="checkbox" ${selectedControl.checked ? 'checked' : ''} 
                            onchange="updateControlProperty('checked', this.checked)">
                 </div>
             </div>
         `;
-        propertiesContent.innerHTML += checkedGroup;
     }
-
-    if (control.type === 'ComboBox' || control.type === 'ListBox') {
-        const itemsGroup = `
+    
+    if (selectedControl.type === 'ComboBox') {
+        html += `
             <div class="property-group">
                 <h4>Items</h4>
-                <textarea class="property-input" rows="5" onchange="updateComboBoxItems(this.value)">${control.items ? control.items.join('\n') : ''}</textarea>
+                <div class="property-row">
+                    <span class="property-label">Items:</span>
+                    <input class="property-input" type="text" value="${selectedControl.items ? selectedControl.items.join(',') : ''}" 
+                           onchange="updateComboBoxItems(this.value)">
+                </div>
             </div>
         `;
-        propertiesContent.innerHTML += itemsGroup;
     }
-
-    if (control.type === 'DateTimePicker') {
-        const dateGroup = `
+    
+    if (selectedControl.type === 'DateTimePicker') {
+        html += `
             <div class="property-group">
-                <h4>Date/Time</h4>
+                <h4>DateTime</h4>
                 <div class="property-row">
                     <span class="property-label">Value:</span>
-                    <input class="property-input" type="date" value="${control.value || ''}" 
+                    <input class="property-input" type="text" value="${selectedControl.value || ''}" 
                            onchange="updateControlProperty('value', this.value)">
                 </div>
                 <div class="property-row">
                     <span class="property-label">Format:</span>
                     <select class="property-input" onchange="updateControlProperty('format', this.value)">
-                        <option value="Long" ${control.format === 'Long' ? 'selected' : ''}>Long</option>
-                        <option value="Short" ${control.format === 'Short' ? 'selected' : ''}>Short</option>
-                        <option value="Time" ${control.format === 'Time' ? 'selected' : ''}>Time</option>
-                        <option value="Custom" ${control.format === 'Custom' ? 'selected' : ''}>Custom</option>
+                        <option value="Long" ${selectedControl.format === 'Long' ? 'selected' : ''}>Long</option>
+                        <option value="Short" ${selectedControl.format === 'Short' ? 'selected' : ''}>Short</option>
+                        <option value="Time" ${selectedControl.format === 'Time' ? 'selected' : ''}>Time</option>
+                        <option value="Custom" ${selectedControl.format === 'Custom' ? 'selected' : ''}>Custom</option>
                     </select>
                 </div>
-                <div class="property-row" style="${control.format === 'Custom' ? '' : 'display:none;'}">
+                <div class="property-row">
                     <span class="property-label">Custom Format:</span>
-                    <input class="property-input" type="text" value="${control.customFormat || ''}" 
+                    <input class="property-input" type="text" value="${selectedControl.customFormat || ''}" 
                            onchange="updateControlProperty('customFormat', this.value)">
                 </div>
             </div>
         `;
-        propertiesContent.innerHTML += dateGroup;
     }
-
-    if (control.type === 'DataGridView') {
-        const gridGroup = `
+    
+    if (selectedControl.type === 'DataGridView') {
+        html += `
             <div class="property-group">
-                <h4>DataGridView</h4>
+                <h4>Grid Properties</h4>
                 <div class="property-row">
                     <span class="property-label">Columns:</span>
-                    <textarea class="property-input" rows="5" onchange="updateGridColumns(this.value)">${control.columns ? control.columns.join('\n') : ''}</textarea>
+                    <input class="property-input" type="text" value="${selectedControl.columns ? selectedControl.columns.join(',') : ''}" 
+                           onchange="updateGridColumns(this.value)">
                 </div>
                 <div class="property-row">
-                    <span class="property-label">Allow Add:</span>
-                    <input class="property-input" type="checkbox" ${control.allowUserToAddRows ? 'checked' : ''} 
+                    <span class="property-label">Add Rows:</span>
+                    <input class="property-input" type="checkbox" ${selectedControl.allowUserToAddRows ? 'checked' : ''} 
                            onchange="updateControlProperty('allowUserToAddRows', this.checked)">
                 </div>
                 <div class="property-row">
-                    <span class="property-label">Allow Delete:</span>
-                    <input class="property-input" type="checkbox" ${control.allowUserToDeleteRows ? 'checked' : ''} 
+                    <span class="property-label">Delete Rows:</span>
+                    <input class="property-input" type="checkbox" ${selectedControl.allowUserToDeleteRows ? 'checked' : ''} 
                            onchange="updateControlProperty('allowUserToDeleteRows', this.checked)">
                 </div>
                 <div class="property-row">
                     <span class="property-label">Read Only:</span>
-                    <input class="property-input" type="checkbox" ${control.readOnly ? 'checked' : ''} 
+                    <input class="property-input" type="checkbox" ${selectedControl.readOnly ? 'checked' : ''} 
                            onchange="updateControlProperty('readOnly', this.checked)">
                 </div>
             </div>
         `;
-        propertiesContent.innerHTML += gridGroup;
     }
-
-    // Events group
-    let events = ['Click'];
-    if (control.type === 'TextBox' || control.type === 'RichTextBox') {
-        events = [...events, 'TextChanged', 'Enter', 'Leave'];
-    }
-    if (control.type === 'Button') {
-        events = ['Click'];
-    }
-    if (control.type === 'CheckBox' || control.type === 'RadioButton') {
-        events = ['CheckedChanged', 'Click'];
-    }
-    if (control.type === 'ComboBox') {
-        events = ['SelectedIndexChanged', 'TextChanged'];
-    }
-    if (control.type === 'DateTimePicker') {
-        events = ['ValueChanged'];
-    }
-    if (control.type === 'DataGridView') {
-        events = ['CellContentClick', 'RowEnter'];
-    }
-    if (control.type === 'ListBox') {
-        events = ['SelectedIndexChanged'];
-    }
-
-    const eventGroup = `
-        <div class="property-group">
-            <h4>Events</h4>
-            ${events.map(eventName => `
+    
+    // Events
+    const events = getControlEvents(selectedControl.type);
+    let eventsHTML = '';
+    if (events.length > 0) {
+        eventsHTML += `<div class="property-group">
+            <h4>Events</h4>`;
+        events.forEach(eventName => {
+            const handlerName = selectedControl.events ? selectedControl.events[eventName] || '' : '';
+            eventsHTML += `
                 <div class="property-row">
                     <span class="property-label">${eventName}:</span>
-                    <input class="property-input" type="text" value="${control.events[eventName] || ''}" 
-                           onkeydown="handleEventKeydown(event, this)">
-                </div>
-            `).join('')}
-        </div>
-    `;
-    propertiesContent.innerHTML += eventGroup;
+                    <input class="property-input" type="text" value="${handlerName}" 
+                           data-event="${eventName}"
+                           onkeydown="handleEventKeydown(event, this)"
+                           onchange="updateEventHandler('${eventName}', this.value)">
+                    <button class="btn-dark small-go" onclick="goToHandler(this.previousElementSibling.value)">Go</button>
+                </div>`;
+        });
+        eventsHTML += `</div>`;
+    }
+    
+    html += eventsHTML;
+    
+    propertiesContent.innerHTML = html;
 }
 
-function updateControlProperty(prop, value) {
-    if (!selectedControl) return;
-    const element = document.querySelector(`.control[data-name="${selectedControl.name}"]`);
+function goToHandler(handlerName) {
+    if (handlerName.trim()) {
+        vscode.postMessage({ type: 'goToHandler', handlerName: handlerName });
+    }
+}
 
-    switch (prop) {
+function getControlEvents(type) {
+    const commonEvents = ['Click', 'DoubleClick', 'MouseDown', 'MouseUp', 'MouseMove', 'KeyDown', 'KeyUp', 'KeyPress'];
+    const textEvents = ['TextChanged', 'Enter', 'Leave'];
+    
+    switch (type) {
+        case 'Button':
+            return [...commonEvents];
+        case 'TextBox':
+        case 'RichTextBox':
+            return [...commonEvents, ...textEvents];
+        case 'Label':
+            return [...commonEvents];
+        case 'CheckBox':
+        case 'RadioButton':
+            return [...commonEvents, 'CheckedChanged'];
+        case 'ComboBox':
+            return [...commonEvents, 'SelectedIndexChanged', ...textEvents];
+        case 'DateTimePicker':
+            return [...commonEvents, 'ValueChanged'];
+        case 'DataGridView':
+            return [...commonEvents, 'CellContentClick', 'RowEnter'];
+        case 'MenuStrip':
+            return ['ItemClicked'];
+        case 'GroupBox':
+            return [...commonEvents];
+        case 'ListBox':
+            return [...commonEvents, 'SelectedIndexChanged'];
+        default:
+            return [];
+    }
+}
+
+function updateControlProperty(property, value) {
+    if (!selectedControl) return;
+    
+    switch (property) {
         case 'name':
+            const oldName = selectedControl.name;
             if (currentFormData.controls.some(c => c.name === value && c !== selectedControl)) {
-                alert('Name must be unique');
+                alert('Name already exists');
                 return;
             }
             selectedControl.name = value;
-            element.dataset.name = value;
+            const element = document.querySelector(`.control[data-name="${oldName}"]`);
+            if (element) {
+                element.dataset.name = value;
+            }
             break;
         case 'text':
             selectedControl.text = value;
             break;
         case 'x':
             selectedControl.location.x = value;
-            element.style.left = value + 'px';
             break;
         case 'y':
             selectedControl.location.y = value;
-            element.style.top = value + 'px';
             break;
         case 'width':
             selectedControl.size.width = value;
-            element.style.width = value + 'px';
             break;
         case 'height':
             selectedControl.size.height = value;
-            element.style.height = value + 'px';
             break;
         case 'tabIndex':
             selectedControl.tabIndex = value;
@@ -575,7 +619,6 @@ function updateControlProperty(prop, value) {
             break;
         case 'format':
             selectedControl.format = value;
-            showControlProperties(selectedControl, element); // Refresh to show/hide custom format
             break;
         case 'customFormat':
             selectedControl.customFormat = value;
@@ -590,87 +633,76 @@ function updateControlProperty(prop, value) {
             selectedControl.readOnly = value;
             break;
     }
-
-    // Update visual
-    const innerElement = element.firstChild;
-    if (innerElement) {
-        if (['Button', 'Label'].includes(selectedControl.type)) {
-            innerElement.textContent = selectedControl.text;
-        } else if (selectedControl.type === 'TextBox') {
-            innerElement.value = selectedControl.text;
-        } else if (selectedControl.type === 'CheckBox' || selectedControl.type === 'RadioButton') {
-            innerElement.querySelector('input').checked = selectedControl.checked;
-            innerElement.querySelector('span').textContent = selectedControl.text;
-        } else if (selectedControl.type === 'DateTimePicker') {
-            innerElement.querySelector('span').textContent = selectedControl.value || 'dd-mm-yyyy';
-        } else if (selectedControl.type === 'GroupBox') {
-            innerElement.querySelector('div').textContent = selectedControl.text;
-        } else if (selectedControl.type === 'RichTextBox') {
-            innerElement.innerHTML = selectedControl.text || 'RichTextBox';
+    
+    const controlElement = document.querySelector(`.control[data-name="${selectedControl.name}"]`);
+    if (controlElement) {
+        controlElement.style.left = selectedControl.location.x + 'px';
+        controlElement.style.top = selectedControl.location.y + 'px';
+        controlElement.style.width = selectedControl.size.width + 'px';
+        controlElement.style.height = selectedControl.size.height + 'px';
+        
+        // Update inner content if needed
+        if (property === 'text' || property === 'checked' || property === 'value') {
+            const parent = controlElement.parentElement;
+            controlElement.remove();
+            createControlElement(selectedControl, parent);
         }
     }
-
+    
     updateFormDesign();
 }
 
-function updateFormProperty(prop, value) {
-    switch (prop) {
+function updateFormProperty(property, value) {
+    switch (property) {
         case 'className':
             vscode.postMessage({
                 type: 'renameForm',
                 newName: value
             });
+            currentFormData.className = value;
             break;
         case 'text':
             currentFormData.text = value;
-            document.getElementById('titleBar').innerText = value;
+            const titleBar = document.getElementById('titleBar');
+            if (titleBar) titleBar.innerText = value;
             break;
         case 'width':
             currentFormData.size.width = value;
-            document.getElementById('formContainer').style.width = value + 'px';
-            document.getElementById('formWindow').style.width = value + 'px';
+            const formContainer = document.getElementById('formContainer');
+            const formWindow = document.getElementById('formWindow');
+            if (formContainer) formContainer.style.width = value + 'px';
+            if (formWindow) formWindow.style.width = value + 'px';
             break;
         case 'height':
             currentFormData.size.height = value;
-            document.getElementById('formContainer').style.height = value + 'px';
-            document.getElementById('formWindow').style.height = (value + TITLE_BAR_HEIGHT) + 'px';
+            if (formContainer) formContainer.style.height = value + 'px';
+            if (formWindow) formWindow.style.height = (value + TITLE_BAR_HEIGHT) + 'px';
             break;
     }
+    
     updateFormDesign();
 }
 
-function deleteControl(control) {
-    vscode.postMessage({
-        type: 'deleteControl',
-        controlName: control.name
-    });
-    const index = currentFormData.controls.indexOf(control);
-    if (index > -1) {
-        currentFormData.controls.splice(index, 1);
+function updateComboBoxItems(itemsString) {
+    selectedControl.items = itemsString.split(',').map(item => item.trim());
+    const controlElement = document.querySelector(`.control[data-name="${selectedControl.name}"]`);
+    if (controlElement) {
+        const select = controlElement.querySelector('select');
+        if (select) {
+            select.innerHTML = selectedControl.items.map(item => `<option>${item}</option>`).join('');
+        }
     }
     updateFormDesign();
-    showFormProperties();
 }
 
-function updateComboBoxItems(itemsText) {
-    if (!selectedControl) return;
-    selectedControl.items = itemsText.split('\n').filter(item => item.trim());
-    updateFormDesign();
-}
-
-function updateGridColumns(columnsText) {
-    if (!selectedControl) return;
-    selectedControl.columns = columnsText.split('\n').filter(col => col.trim());
+function updateGridColumns(columnsString) {
+    selectedControl.columns = columnsString.split(',').map(col => col.trim());
     updateFormDesign();
 }
 
 function handleEventKeydown(event, input) {
     if (event.key === 'Enter') {
-        event.preventDefault();
-        input.blur();
-
-        let eventName = input.previousElementSibling.textContent.trim().replace(':', '');
-
+        let eventName = input.dataset.event;
         // Normalize to PascalCase
         if (eventName) {
             eventName = eventName.charAt(0).toUpperCase() + eventName.slice(1);

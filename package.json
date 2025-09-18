@@ -1,62 +1,74 @@
+
 {
-  "name": "model-intellisense",
-  "displayName": "Model IntelliSense for Java Spring Boot Thymeleaf HTML",
-  "description": "Spring Boot model fields IntelliSense suggestions in Thymeleaf HTML pages",
-  "version": "2.12.10",
-  "publisher": "atkivisolutioninstadotnetmodelgenerator",
+  "name": "winforms-designer",
+  "displayName": "WinForms Designer fun",
+  "description": "Visual designer for Windows Forms with two-way editing",
+  "version": "1.12.10",
+    "publisher": "atkivisolutioninstadotnetmodelgenerator",
   "engines": {
-    "vscode": "^1.100.0"
+    "vscode": "^1.60.0"
   },
   "categories": [
     "Visualization",
-    "Other"
+    "Designers"
   ],
-  "icon": "image/logo.png",
+   "icon": "image/logo.png",
   "activationEvents": [
-    "onLanguage:html",
-    "onLanguage:plaintext",
-    "onCommand:modelIntellisense.rescanModels"
+    "onCustomEditor:winformsDesigner.designer"
   ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [
+    "customEditors": [
       {
-        "command": "modelIntellisense.rescanModels",
-        "title": "Model IntelliSense: Rescan Models"
+        "viewType": "winformsDesigner.designer",
+        "displayName": "WinForms Designer",
+        "selector": [
+          {
+            "filenamePattern": "*.Designer.cs"
+          }
+        ]
       }
-    ]
-  },
-  "scripts": {
-    "package": "vsce package"
-  },
-  "keywords": [
-    "thymeleaf",
-    "spring boot",
-    "java",
-    "html",
-    "intellisense",
-    "model",
-    "completion",
-    "template"
+    ],
+     "keywords": [
+    "dotnet8",
+    "winform",
+    "winform designer",
+    "dark mode",
+    "drag and drop",
+    "vs code winform designer",
+    "c# winform designer"
+    
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/model-intellisense"
+    "url": "https://github.com/yourusername/spring-boot-scaffold-generator"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/model-intellisense/issues"
+    "url": "https://github.com/yourusername/spring-boot-scaffold-generator/issues"
   },
-  "homepage": "https://github.com/yourusername/model-intellisense",
+  "homepage": "https://github.com/yourusername/spring-boot-scaffold-generator",
   "license": "MIT",
-  "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
-    "@types/vscode": "^1.100.0",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.25.1"
-  },
-  "dependencies": {
-    "glob": "^7.2.3"
+    "commands": [
+      {
+        "command": "winformsDesigner.openDesigner",
+        "title": "Open with WinForms Designer",
+        "category": "WinForms"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "winformsDesigner.openDesigner",
+          "when": "resourceLangId == csharp"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "winformsDesigner.openDesigner",
+          "when": "resourceFilename =~ /(\\.Designer\\.cs)$/",
+          "group": "navigation"
+        }
+      ]
+    }
   }
 }

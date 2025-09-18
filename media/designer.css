@@ -1,0 +1,565 @@
+
+/* designer.css */
+
+/* Main container layout */
+.designer-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: #1e1e1e; /* Dark background */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #d4d4d4;
+}
+
+.toolbox {
+    width: 200px;
+    background: #252526; /* Dark toolbox background */
+    color: #d4d4d4;
+    padding: 10px;
+    overflow-y: auto;
+    border-right: 2px solid #3c3c3c;
+    box-shadow: 1px 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.design-surface {
+    flex: 1;
+    background: #1e1e1e; /* Dark background */
+    overflow: auto;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.properties-panel {
+    width: 300px;
+    background: #252526; /* Dark properties background */
+    color: #d4d4d4;
+    padding: 10px;
+    overflow-y: auto;
+    border-left: 2px solid #3c3c3c;
+    box-shadow: -1px 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.toolbox h3,
+.properties-panel h3 {
+    margin-top: 0;
+    color: #d4d4d4;
+    border-bottom: 2px solid #3c3c3c;
+    padding-bottom: 8px;
+    font-weight: bold;
+}
+
+/* Form window styling */
+.form-window {
+    position: relative;
+    margin: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    min-width: 200px;
+    min-height: 180px; /* Account for title bar */
+}
+
+/* Title bar styling */
+.title-bar {
+    height: 30px;
+    background: skyblue; /* Skyblue background as requested */
+    color: #000000;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-weight: bold;
+    border-bottom: 2px solid #3c3c3c;
+    position: relative;
+    z-index: 10;
+}
+
+/* Form container (client area) styling */
+.form-container {
+    position: relative;
+    background: #252526; /* Dark form background */
+    border: 2px solid #3c3c3c; /* Dark border */
+    overflow: hidden;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    min-width: 200px;
+    min-height: 150px;
+}
+
+.control {
+    position: absolute;
+    border: 1px solid transparent;
+    cursor: move;
+    user-select: none;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.control.selected {
+    border: 2px dotted #007acc; /* Blue selection border */
+    z-index: 1000;
+}
+
+.control:hover {
+    border: 1px dashed #007acc; /* Blue hover border */
+}
+
+/* Resize handles for all corners and sides */
+.resize-handle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #d4d4d4;
+    z-index: 1001;
+    border: 1px solid #000000;
+    box-sizing: border-box;
+    display: none;
+}
+
+.control:hover .resize-handle,
+.control.selected .resize-handle {
+    display: block;
+}
+
+.resize-handle.nw {
+    top: -4px;
+    left: -4px;
+    cursor: nwse-resize;
+}
+
+.resize-handle.ne {
+    top: -4px;
+    right: -4px;
+    cursor: nesw-resize;
+}
+
+.resize-handle.sw {
+    bottom: -4px;
+    left: -4px;
+    cursor: nesw-resize;
+}
+
+.resize-handle.se {
+    bottom: -4px;
+    right: -4px;
+    cursor: nwse-resize;
+}
+
+.resize-handle.n {
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: ns-resize;
+}
+
+.resize-handle.s {
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: ns-resize;
+}
+
+.resize-handle.e {
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: ew-resize;
+}
+
+.resize-handle.w {
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: ew-resize;
+}
+
+/* Move handle (blue dot) */
+.move-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #007acc; /* Blue for dark theme */
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: move;
+    z-index: 1002;
+    border: 1px solid #000000;
+    display: none;
+}
+
+.control:hover .move-handle,
+.control.selected .move-handle {
+    display: block;
+}
+
+/* Delete button for selected controls */
+.delete-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #ff0000; /* Red */
+    top: -5px;
+    right: -5px;
+    cursor: pointer;
+    z-index: 1003;
+    border: 1px solid #000000;
+    display: none;
+}
+
+.control:hover .delete-handle,
+.control.selected .delete-handle {
+    display: block;
+}
+
+.delete-handle:hover {
+    background: #ff4444;
+}
+
+.toolbox-item {
+    padding: 8px;
+    margin: 5px 0;
+    background: #333333;
+    color: #d4d4d4;
+    border: 2px solid #3c3c3c; /* Dark border */
+    border-radius: 0;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.toolbox-item:hover {
+    background: #444444;
+    border-color: #007acc;
+}
+
+.property-group {
+    margin-bottom: 15px;
+    border-bottom: 2px solid #3c3c3c; /* Dark groove */
+    padding-bottom: 10px;
+}
+
+.property-group h4 {
+    margin: 0 0 10px 0;
+    color: #d4d4d4;
+    font-weight: bold;
+}
+
+.property-row {
+    display: flex;
+    margin-bottom: 5px;
+    align-items: center;
+}
+
+.property-label {
+    width: 100px;
+    font-size: 12px;
+    color: #d4d4d4;
+}
+
+.property-input {
+    flex: 1;
+    background: #333333;
+    color: #d4d4d4;
+    border: 2px inset #3c3c3c; /* Dark inset */
+    padding: 5px;
+    font-size: 12px;
+    border-radius: 0;
+}
+
+.property-input:focus {
+    outline: 1px solid #007acc;
+}
+
+.menu-editor {
+    margin-top: 10px;
+    border: 2px solid #3c3c3c; /* Dark groove */
+    padding: 10px;
+    border-radius: 0;
+    background: #252526;
+}
+
+.menu-item {
+    padding: 5px;
+    margin: 3px 0;
+    background: #333333;
+    border: 2px solid #3c3c3c; /* Dark */
+    cursor: pointer;
+    border-radius: 0;
+}
+
+.menu-item:hover {
+    background: #444444;
+}
+
+.submenu-items {
+    margin-left: 20px;
+    border-left: 2px solid #3c3c3c;
+    padding-left: 10px;
+}
+
+.add-menu-item {
+    background: #333333;
+    color: #d4d4d4;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 0;
+    cursor: pointer;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.add-menu-item:hover {
+    background: #444444;
+}
+
+/* Dark style buttons */
+.btn-dark {
+    background: #333333;
+    border-top: 2px solid #444444;
+    border-left: 2px solid #444444;
+    border-bottom: 2px solid #222222;
+    border-right: 2px solid #222222;
+    color: #d4d4d4;
+    padding: 4px 8px;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 12px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset;
+}
+
+.btn-dark:hover {
+    background: #444444;
+    border-top: 2px solid #555555;
+    border-left: 2px solid #555555;
+    border-bottom: 2px solid #111111;
+    border-right: 2px solid #111111;
+}
+
+.btn-dark:active {
+    border-top: 2px solid #222222;
+    border-left: 2px solid #222222;
+    border-bottom: 2px solid #444444;
+    border-right: 2px solid #444444;
+    background: #222222;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset;
+}
+
+/* Dark style controls */
+.dark-button {
+    background: #333333;
+    border-top: 2px solid #444444;
+    border-left: 2px solid #444444;
+    border-bottom: 2px solid #222222;
+    border-right: 2px solid #222222;
+    color: #d4d4d4;
+    border-radius: 0;
+    box-shadow: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.dark-button:hover {
+    background: #444444;
+    border-top: 2px solid #555555;
+    border-left: 2px solid #555555;
+    border-bottom: 2px solid #111111;
+    border-right: 2px solid #111111;
+}
+
+.dark-textbox {
+    border-top: 2px solid #222222;
+    border-left: 2px solid #222222;
+    border-bottom: 2px solid #444444;
+    border-right: 2px solid #444444;
+    background: #2d2d2d;
+    color: #d4d4d4;
+    border-radius: 0;
+    padding: 2px 4px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.dark-textbox:focus {
+    border-top: 2px solid #111111;
+    border-left: 2px solid #111111;
+    border-bottom: 2px solid #555555;
+    border-right: 2px solid #555555;
+    outline: none;
+}
+
+.dark-label {
+    color: #d4d4d4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    padding: 3px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.dark-checkbox {
+    accent-color: #007acc;
+}
+
+.dark-combobox {
+    border-top: 2px solid #222222;
+    border-left: 2px solid #222222;
+    border-bottom: 2px solid #444444;
+    border-right: 2px solid #444444;
+    background: #2d2d2d;
+    color: #d4d4d4;
+    border-radius: 0;
+    padding: 2px 4px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.dark-datetime {
+    border-top: 2px solid #222222;
+    border-left: 2px solid #222222;
+    border-bottom: 2px solid #444444;
+    border-right: 2px solid #444444;
+    background: #2d2d2d;
+    color: #d4d4d4;
+    border-radius: 0;
+    padding: 2px 4px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
+.dark-grid {
+    border-top: 2px solid #222222;
+    border-left: 2px solid #222222;
+    border-bottom: 2px solid #444444;
+    border-right: 2px solid #444444;
+    background: #2d2d2d;
+    color: #d4d4d4;
+    border-radius: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+.dark-menu {
+    background: #333333;
+    border-top: 2px solid #444444;
+    border-left: 2px solid #444444;
+    border-bottom: 2px solid #222222;
+    border-right: 2px solid #222222;
+    color: #d4d4d4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.dark-groupbox {
+    border: 2px solid #3c3c3c; /* Dark groove */
+    background: #252526;
+    color: #d4d4d4;
+    border-radius: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+.dark-listbox {
+    border-top: 2px solid #222222;
+    border-left: 2px solid #222222;
+    border-bottom: 2px solid #444444;
+    border-right: 2px solid #444444;
+    background: #2d2d2d;
+    color: #d4d4d4;
+    border-radius: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+    padding: 3px;
+}
+
+.dark-richtextbox {
+    border-top: 2px solid #222222;
+    border-left: 2px solid #222222;
+    border-bottom: 2px solid #444444;
+    border-right: 2px solid #444444;
+    background: #2d2d2d;
+    color: #d4d4d4;
+    border-radius: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+    padding: 3px;
+}
+
+/* Form resize handle */
+.form-resize-handle {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #252526;
+    right: -8px;
+    bottom: -8px;
+    cursor: nwse-resize;
+    z-index: 1001;
+    border: 2px solid #3c3c3c; /* Dark groove */
+}
+
+/* Context menu */
+.context-menu {
+    position: fixed;
+    background: #252526;
+    border: 2px solid #3c3c3c; /* Dark groove */
+    padding: 5px;
+    z-index: 10000;
+    border-radius: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.context-menu div {
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 0;
+    color: #d4d4d4;
+}
+
+.context-menu div:hover {
+    background: #007acc;
+    color: #ffffff;
+}
